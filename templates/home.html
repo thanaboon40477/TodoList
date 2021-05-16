@@ -1,0 +1,52 @@
+{% extends "nostaticLayout.html" %}
+{% block content %}
+
+<br><br><br><br>
+
+<div id="app"> 
+    <span class="bg"></span>
+    <v-app id="inspire">
+            <v-card-text class="text-center" style="margin-top: 260px;">
+                <v-btn
+                    dark
+                    x-large
+                    type="submit"
+                    color="#3498DB"
+                    @click='nextpage'>
+                    Click to Next Page <v-icon dark right>
+                        mdi-arrow-right-thick
+                        </v-icon>
+                 </v-btn>
+            </v-card-text>
+    </v-app>
+</div>
+
+<script>
+    new Vue({
+        el: "#app",
+        vuetify: new Vuetify(),
+        data: () => ({
+
+        }),
+        methods:{
+            nextpage(){
+                const path = '/';
+                axios.post(path)
+                .then(() => {
+                   console.log("success")
+                   window.location = '/testtable'
+               })
+                .catch((err) => {
+                    console.log(err)
+                })
+            }
+        },
+        delimiters: ["[[", "]]"]
+    })
+</script>
+
+<style>
+    @import "/static/css/bg_color.css";
+</style>
+
+{% endblock %}

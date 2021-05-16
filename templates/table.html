@@ -1,0 +1,311 @@
+{% extends "nostaticLayout.html" %}
+{% block content %}
+<br><br><br>
+<div id='app'>
+    <span class="bg"></span>
+    <v-app id=inspire>
+        <v-container>
+            <v-card-title class="display-1 text--primary">
+                To Do List
+            </v-card-title> 
+            <v-card-title>
+            <v-text-field
+            style="margin-top: 25px;"
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+            ></v-text-field>
+            </v-card-title>
+            <v-data-table
+                v-model="selected"
+                show-select
+                :headers="headers"
+                :items="user"
+                class="elevation-1"
+                :search='search'>
+                <template v-slot:item.action='{ item }'>
+                     <v-icon
+                     small
+                     class="mr-2"
+                     color="green"
+                     @click="editItem(item)">
+                    mdi-pencil
+                     </v-icon>
+                     <v-icon
+                     small
+                     class="mr-2"
+                     color="red"
+                     @click="deleteItem(item)">
+                    mdi-delete
+                     </v-icon>
+                </template>
+
+                
+
+                <template v-slot:top>
+                    <v-toolbar flat>
+
+                        <v-btn
+                        color="primary"
+                        dark
+                        class="mb-2"
+                        @click='sendData(selected)'>
+
+                        Save Checkbox</v-btn>
+                            <v-divider
+                                class="mx-4"
+                                inset
+                                vertical>
+                            </v-divider>
+                            <v-spacer></v-spacer>
+                            <v-dialog
+                                v-model='dialogData'
+                                max-width='500px'>
+                            <template v-slot:activator="{on, attrs}">
+                                <v-btn
+                                    color="#FF648D"
+                                    style="margin-left: 10px"
+                                    dark
+                                    small
+                                    elevation="3"
+                                    v-bind="attrs"
+                                    v-on='on'>
+                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                    เพิ่มข้อมูล
+                                </v-btn>
+                            </template>
+                                <v-card>
+                                    <v-card-title>
+                                        <span class= 'headline'>
+                                            [[formTitle]]
+                                        </span>
+                                    </v-card-title>
+
+                                        <v-card-text>
+                                            <v-container>
+                                                <v-col>
+                                                    <v-text-field
+                                                    label='Name'
+                                                    v-model="editedItem.name">
+                                                    </v-text-field>
+                                                </v-col>
+                                                <v-col>
+                                                    <v-text-field
+                                                    label='Surname'
+                                                    v-model="editedItem.surname">
+                                                    </v-text-field>
+                                                </v-col>
+                                                <v-col>
+                                                    <v-text-field
+                                                    label='Color'
+                                                    v-model="editedItem.color">
+                                                    </v-text-field>
+                                                </v-col>
+                                                
+                                            </v-container>
+                                        </v-card-text>
+                                        <v-card-actions>
+                                            <v-spacer> </v-spacer>
+                                            <v-btn
+                                            color="red darken-1"
+                                            text
+                                            @click="close">
+                                            ยกเลิก
+                                            </v-btn>
+
+                                            <v-btn
+                                            color="green darken-1"
+                                            text
+                                            @click="save">
+                                            ตกลง
+                                            </v-btn>
+                                        </v-card-actions>
+                                    
+                                </v-card>
+                            </v-dialog>   
+                    </v-toolbar>
+
+                    <v-dialog v-model="dialogDelete" max-width="500px">
+                        <v-card>
+                            <v-card-title class="headline"> 
+                                คุณต้องการ ลบ หรือ ไม่?
+                            </v-card-title>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="blue darken-1" text @click="closeDelete">ยกเลิก</v-btn>
+                                <v-btn color="blue darken-1" text @click="deleteItemComfirm">ตกลง</v-btn>
+                                <v-spacer></v-spacer>
+                              </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+
+                </template>
+            </v-data-table>
+        </v-container>
+    </v-app>    
+</div>
+
+<script>
+
+    new Vue({
+        el: '#app',
+        vuetify: new Vuetify(),
+        data() {
+            return {
+                selected: [],
+                search:'',
+                user: [],
+                headers: [
+                {text: 'Name', value: 'name'},
+                {text: 'Surnme', value: 'surname'},
+                {text: 'Color', value: 'color'},
+                {text: 'Edit/Delete', value: 'action', sortable: false}
+                ],
+                editedIndex: -1,
+                editedItem: {
+                    id: '',
+                    name: '',
+                    surname: '',
+                    color: ''
+                },
+                defaultItem: {
+                    id: '',
+                    name: '',
+                    surname: '',
+                    color: ''
+                },
+                users: [],
+                dialogData: false,
+                dialogDelete: false
+            }
+        },
+        computed: {
+            formTitle(){
+                return this.editedIndex === -1 ? 'เพิ่มข้อมูล' : 'แก้ไขข้อมูล'
+            }
+        },
+        created() {
+            this.getUser()
+        },
+        watch: {
+            dialogData(val) {
+                val || this.close()
+            },
+            dialogDelete(val) {
+                val || this.closeDelete()
+            }
+        },
+        methods: {
+            getUser(){
+                const path = '/users'
+                axios.get(path)
+                .then((res) => {
+                    this.user = res.data.users // users Key ใน Dict
+                    console.log(this.user);
+                })
+                .catch((err) => {
+                    console.error(err);
+                })
+            },
+            editItem(item){
+                this.editedIndex = this.user.indexOf(item)
+                this.editedItem = Object.assign({}, item)
+                this.dialogData = true
+            },
+            deleteItem(item){
+                this.editedIndex = this.user.indexOf(item)
+                this.editedItem = Object.assign({}, item)
+                this.dialogDelete = true
+            },
+            deleteItemComfirm(){
+                let id = this.user.splice(this.editedIndex, 1)
+                // console.log(id)
+                id.forEach((v) => {
+                    this.deleteBackend(v.id)
+                })
+                this.closeDelete()
+            },
+            closeDelete(){
+                this.dialogDelete = false
+                this.$nextTick(() => {
+                    this.editedItem = Object.assign({}, this.defaultItem)
+                    this.editedIndex = -1
+                })
+            },
+            save(){
+                if (this.editedIndex > -1) {
+                    let form = Object.assign(this.user[this.editedIndex], this.editedItem)  
+                    this.updateBackend(form, form.id)
+                } else {
+                    this.insertBackend(this.editedItem)
+                }
+                this.close()
+            },
+            close(){
+                this.dialogData = false
+                this.$nextTick(() => {
+                    this.editedItem = Object({}, this.defaultItem)
+                    this.editedIndex = -1
+                })
+            },
+            insertBackend(data){
+                const path = '/users/add'
+                axios.post(path, data)
+                .then(() => {
+                    this.getUser()
+                    console.log('sucess')
+                })
+                .catch((err) => {
+                    console.error(err)
+                })
+            },
+            updateBackend(data, id){
+                const path = `/users/update/${id}`
+                axios.put(path, data)
+                .then(() => {
+                    console.log('success')
+                })
+                .catch((err) => {
+                    console.error(err)
+                })
+            },
+            deleteBackend(id){
+                const path = `/users/delete/${id}`
+                axios.delete(path)
+                .then(() => {
+                    console.log('success')
+                })
+                .catch((err) => {
+                    console.error(err)
+                })
+            },
+            sendData(selected){
+                let lst = []
+                selected.forEach(data => {
+                    lst.push(data.name)
+                })
+                const path = '/users/check'
+                axios.post(path, lst)
+                .then(() => {
+                    console.log(lst)
+                    console.log('success')
+                })
+                .catch((err) => {
+                    console.error(err)
+                })
+
+            },
+            
+        },
+        delimiters: ["[[","]]"]
+    })
+
+</script>
+
+<style>
+    @import "/static/css/bg_color.css";
+</style>
+
+{% endblock %}
