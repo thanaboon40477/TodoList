@@ -1,8 +1,14 @@
 # TodoList
- 
+
+เข้า https://todolisttestdata.herokuapp.com/
+
+หรือ
+
+# ต้องมี mongoDB (Local)
+
 Run ใน Visual Studio Code
 
-เข้าไปที่ file ONETEST
+เข้าไปที่ file TodoList
 
 กดที่ Terminal > New Terminal แล้ว
 
@@ -14,4 +20,4 @@ Run ใน Visual Studio Code
 
 เข้า Link ที่ขึ้นมา
 
-download ตาม requirements.txt
+download Library ตาม requirements.txt
