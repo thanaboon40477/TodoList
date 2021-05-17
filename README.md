@@ -2,6 +2,8 @@
 
 เข้า https://todolisttestdata.herokuapp.com/
 
+(ยังทำ mongoDB ใช้แบบ Global ไม่ได้)
+
 หรือ
 
 # ต้องมี mongoDB (Local)
