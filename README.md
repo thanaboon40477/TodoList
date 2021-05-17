@@ -2,7 +2,7 @@
 
 เข้า https://todolisttestdata.herokuapp.com/
 
-(ยังทำ mongoDB ใช้แบบ Global ไม่ได้)
+(ยังทำ mongoDB ใช้แบบ Global ไม่ได้ (โชว์แต่หน้าเว็บ) )
 
 หรือ
 
