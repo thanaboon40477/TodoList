@@ -16,7 +16,7 @@ Run ใน Visual Studio Code
 
 พิมพ์ cd venv > cd Scripts > activate > cd.. > cd..
 
-(venv) D:\Todolist\TodoList>
+(venv) D:\TodoList>
 
 และ พิมพ์ใน Terminal uvicorn app:app --reload แล้ว
 
