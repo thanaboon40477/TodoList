@@ -7,7 +7,7 @@ from Object_Str import Foo
 # อยู่ใน floder router
 
 router = APIRouter()
-db = MongoDB(database_name='edu', uri='mongodb://127.0.0.1:27017/')
+db = MongoDB(database_name='edu', uri='mongodb://admin:40477kup@cluster0-shard-00-00.a0psv.mongodb.net:27017,cluster0-shard-00-01.a0psv.mongodb.net:27017,cluster0-shard-00-02.a0psv.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-2ic0zr-shard-0&authSource=admin&retryWrites=true&w=majority')
 
 
 @router.get('/')
